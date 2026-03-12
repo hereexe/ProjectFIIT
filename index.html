@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Калькулятор BMI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #38bdf8 100%);
+      color: #0f172a;
+    }
+
+    .card {
+      background: #0b1120;
+      color: #e5e7eb;
+      padding: 2.5rem 2.25rem;
+      border-radius: 1.5rem;
+      box-shadow:
+        0 20px 25px -5px rgba(15, 23, 42, 0.7),
+        0 10px 10px -5px rgba(15, 23, 42, 0.9);
+      width: 100%;
+      max-width: 440px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -100px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.16), transparent 55%);
+      opacity: 0.9;
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 1.75rem;
+    }
+
+    form {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: #e5e7eb;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 0.9rem;
+      padding: 0.55rem 0.85rem;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    input[type="number"] {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: #f9fafb;
+      font-size: 0.95rem;
+      padding: 0.35rem 0.1rem;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .unit {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      padding: 0.1rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      white-space: nowrap;
+    }
+
+    button {
+      margin-top: 0.25rem;
+      padding: 0.8rem 1.2rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      background: linear-gradient(135deg, #38bdf8, #4f46e5);
+      color: #0b1120;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      box-shadow:
+        0 12px 18px -8px rgba(56, 189, 248, 0.6),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+      box-shadow:
+        0 16px 26px -12px rgba(56, 189, 248, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 1);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow:
+        0 8px 14px -10px rgba(15, 23, 42, 1),
+        0 0 0 1px rgba(15, 23, 42, 1);
+    }
+
+    .result {
+      margin-top: 1.75rem;
+      padding: 1rem 0.9rem;
+      border-radius: 1rem;
+      background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.15), transparent 55%),
+                  radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.18), transparent 55%);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: grid;
+      gap: 0.45rem;
+      font-size: 0.95rem;
+    }
+
+    .result-title {
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: #e5e7eb;
+    }
+
+    .bmi-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #facc15;
+    }
+
+    .category {
+      font-weight: 500;
+      color: #a5b4fc;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      margin-top: 0.4rem;
+    }
+
+    .error {
+      color: #fecaca;
+    }
+
+    @media (max-width: 520px) {
+      .card {
+        margin: 1.25rem;
+        padding: 1.9rem 1.6rem;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" aria-label="Калькулятор индекса массы тела">
+    <h1>BMI калькулятор</h1>
+    <p class="subtitle">Введите рост и вес, чтобы рассчитать индекс массы тела.</p>
+
+    <form id="bmi-form" novalidate>
+      <div class="field">
+        <label for="height">Рост</label>
+        <div class="input-wrapper">
+          <input
+            id="height"
+            name="height"
+            type="number"
+            inputmode="decimal"
+            min="50"
+            max="250"
+            step="0.1"
+            placeholder="Например, 175"
+            required
+          />
+          <span class="unit">см</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="weight">Вес</label>
+        <div class="input-wrapper">
+          <input
+            id="weight"
+            name="weight"
+            type="number"
+            inputmode="decimal"
+            min="20"
+            max="300"
+            step="0.1"
+            placeholder="Например, 70"
+            required
+          />
+          <span class="unit">кг</span>
+        </div>
+      </div>
+
+      <button type="submit">Рассчитать BMI</button>
+    </form>
+
+    <section class="result" aria-live="polite" id="result">
+      <div class="result-title">Результат</div>
+      <div id="bmi-text" class="bmi-value">—</div>
+      <div id="category-text" class="category">Введите данные и нажмите «Рассчитать».</div>
+      <p class="hint">
+        BMI рассчитывается по формуле: вес / (рост в метрах)<sup>2</sup>. Калькулятор предназначен только
+        для ориентировочной оценки и не заменяет консультацию врача.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const form = document.getElementById("bmi-form");
+      const heightInput = document.getElementById("height");
+      const weightInput = document.getElementById("weight");
+      const bmiText = document.getElementById("bmi-text");
+      const categoryText = document.getElementById("category-text");
+
+      function getBmiCategory(bmi) {
+        if (!Number.isFinite(bmi)) {
+          return "";
+        }
+
+        if (bmi < 18.5) {
+          return "Недостаточная масса тела";
+        }
+        if (bmi < 25) {
+          return "Нормальная масса тела";
+        }
+        if (bmi < 30) {
+          return "Избыточная масса тела";
+        }
+        return "Ожирение";
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const height = parseFloat(heightInput.value.replace(",", "."));
+        const weight = parseFloat(weightInput.value.replace(",", "."));
+
+        if (!height || !weight || height <= 0 || weight <= 0) {
+          bmiText.textContent = "—";
+          categoryText.textContent = "Пожалуйста, введите корректные значения роста и веса.";
+          categoryText.classList.add("error");
+          return;
+        }
+
+        categoryText.classList.remove("error");
+
+        const heightMeters = height / 100;
+        const bmi = weight / (heightMeters * heightMeters);
+
+        if (!Number.isFinite(bmi) || bmi <= 0) {
+          bmiText.textContent = "—";
+          categoryText.textContent = "Не удалось выполнить расчёт. Проверьте введённые значения.";
+          categoryText.classList.add("error");
+          return;
+        }
+
+        const roundedBmi = Math.round(bmi * 10) / 10;
+        const category = getBmiCategory(roundedBmi);
+
+        bmiText.textContent = roundedBmi.toString().replace(".", ",");
+        categoryText.textContent = category || "Расчёт выполнен.";
+      });
+    })();
+  </script>
+</body>
+</html>
